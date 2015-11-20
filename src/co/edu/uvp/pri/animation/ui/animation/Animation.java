@@ -13,9 +13,9 @@ public class Animation extends JComponent {
     private Timer timerPendulo;
 
     private int minute = 90;
-    private int balanceo= 135;
-    private boolean balanceoMax=false;
-
+    private int balanceo= 115;
+    private int direccionBalanceo=-1;
+    
     @Override
     public void paintComponent(Graphics g) {
 //****************************************
@@ -62,17 +62,19 @@ public class Animation extends JComponent {
         y = (int) (radius * Math.sin(Math.toRadians(this.minute)));
         g.drawLine(cx, cy, cx + x, cy - y);
         
+        //******************************        
         //Linea de pendulo
         //Variables del pendulo
         int cpx = cx; //Centro pendulo origen 
         int cpy = cy+80; //Centro pendulo origen 
-        radius = 40;
+        radius = 80; // Longitud del radio del pendulo
         x = (int) (radius * Math.cos(Math.toRadians(this.balanceo)));
         y = (int) (radius * Math.sin(Math.toRadians(this.balanceo)));
-        this.balanceoMax = (this.balanceo==45);
-        
         
         g.drawLine(cpx, cpy, cpx+x, cpy+y);
+        
+        //******************************        
+        g.fillOval((cpx+x)-20, (cpy+y)-20, 40, 40);
 
     }
 
@@ -81,11 +83,14 @@ public class Animation extends JComponent {
     }
     
     private void balancear(){
-        if(this.balanceoMax){
-            this.balanceo += 1;     
-        }else{
-            this.balanceo -= 1;     
-        }
+        
+        
+        if(this.balanceo==65) direccionBalanceo=1;
+        if(this.balanceo==115) direccionBalanceo=-1;    
+        this.balanceo += direccionBalanceo;     
+        
+        
+        
         
     }
 
@@ -98,7 +103,7 @@ public class Animation extends JComponent {
 
         }
         if (this.timerPendulo == null) {
-            this.timerPendulo = new Timer(50, (ActionEvent e) -> {
+            this.timerPendulo = new Timer(20, (ActionEvent e) -> {
                 balancear();
                 repaint();
             });
