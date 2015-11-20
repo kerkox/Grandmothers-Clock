@@ -12,7 +12,9 @@ public class Animation extends JComponent {
     private Timer timer;
     private Timer timerPendulo;
 
+    private int second = 90;
     private int minute = 90;
+    private int hour = -210;
     private int balanceo= 115;
     private int direccionBalanceo=-1;
     
@@ -42,28 +44,51 @@ public class Animation extends JComponent {
         g.setColor(Color.black);
         g.drawOval(cx - radius, cy - radius,
                 radius * 2, radius * 2);
-
+        int size;
         for (int i = 0; i < 360; i += 6) {
+            size =5;
             int x1 = (int) (radius * Math.cos(Math.toRadians(i)));
             int y1 = (int) (radius * Math.sin(Math.toRadians(i)));
-            int x2 = (int) ((radius - 5) * Math.cos(Math.toRadians(i)));
-            int y2 = (int) ((radius - 5) * Math.sin(Math.toRadians(i)));
+            //Variable para aumentar la longitud de los valores claves del reloj
+            if(i%30==0){
+                size = 15;
+            } 
+            int x2 = (int) ((radius - size) * Math.cos(Math.toRadians(i)));
+            int y2 = (int) ((radius - size) * Math.sin(Math.toRadians(i)));
+            
             g.drawLine(cx + x1, cy - y1, cx + x2, cy - y2);
+            
+           
         }
+        
+        //**********************
+        //Horario
 
-        radius = 25;
-        int angle = 150;
-        int x = (int) (radius * Math.cos(Math.toRadians(angle)));
-        int y = (int) (radius * Math.sin(Math.toRadians(angle)));
+        radius = 20;
+        
+        int x = (int) (radius * Math.cos(Math.toRadians(this.hour)));
+        int y = (int) (radius * Math.sin(Math.toRadians(this.hour)));
         g.drawLine(cx, cy, cx + x, cy - y);
 
-        radius = 40;
+        //**********************
+        //Minutero
+        g.setColor(Color.blue);
+        radius = 30;
         x = (int) (radius * Math.cos(Math.toRadians(this.minute)));
         y = (int) (radius * Math.sin(Math.toRadians(this.minute)));
         g.drawLine(cx, cy, cx + x, cy - y);
         
+        //**********************
+        //Segundero
+        g.setColor(Color.RED);
+        radius = 40;
+        x = (int) (radius * Math.cos(Math.toRadians(this.second)));
+        y = (int) (radius * Math.sin(Math.toRadians(this.second)));
+        g.drawLine(cx, cy, cx + x, cy - y);
+        
         //******************************        
         //Linea de pendulo
+        g.setColor(Color.black);
         //Variables del pendulo
         int cpx = cx; //Centro pendulo origen 
         int cpy = cy+80; //Centro pendulo origen 
@@ -74,30 +99,47 @@ public class Animation extends JComponent {
         g.drawLine(cpx, cpy, cpx+x, cpy+y);
         
         //******************************        
-        g.fillOval((cpx+x)-20, (cpy+y)-20, 40, 40);
+        
+        g.fillOval((cpx+x)-20, (cpy+y), 40, 40);
+        
 
     }
 
-    private void nextFrame() {
-        this.minute -= 6;
+    private void nextSecond() {
+        this.second -= 6;
+        if(this.second==-270){
+            this.second=90;
+            nextMinute();
+        }
+        
     }
+   private void nextMinute(){
+       this.minute -=6;
+        if(this.minute==-270){
+            this.minute=90;
+            nextHour();
+        }
+   }
+   
+   private void nextHour(){
+       this.hour -=6;
+       if(this.hour==-270){
+            this.hour=90;
+         
+        }
+   }
+       
     
     private void balancear(){
-        
-        
         if(this.balanceo==65) direccionBalanceo=1;
         if(this.balanceo==115) direccionBalanceo=-1;    
         this.balanceo += direccionBalanceo;     
-        
-        
-        
-        
     }
 
     public void init() {
         if (this.timer == null) {
             this.timer = new Timer(1000, (ActionEvent e) -> {
-                nextFrame();
+                nextSecond();
                 repaint();
             });
 
@@ -122,7 +164,8 @@ public class Animation extends JComponent {
     public void restart() {
         this.pause();
         // Iniciar variables
-        this.minute=90;
+        this.second=90;
+        this.balanceo=115;
         this.init();
     }
 
